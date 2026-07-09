@@ -135,7 +135,7 @@ function ItemDetail({ slug }: { slug: string }) {
             .eq("output_item_id", item.id),
           supabase
             .from("recipe_ingredients")
-            .select("amount, recipe:recipes(*, station:stations(name), output_item:items!recipes_output_item_id_fkey(name))")
+            .select("amount, recipe:recipes(id, name, output_item_id, station:stations(name))")
             .eq("item_id", item.id),
           supabase
             .from("vendor_prices")
