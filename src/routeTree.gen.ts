@@ -9,8 +9,44 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TechnologiesRouteImport } from './routes/technologies'
+import { Route as NpcsRouteImport } from './routes/npcs'
+import { Route as ItemsRouteImport } from './routes/items'
+import { Route as HistoryRouteImport } from './routes/history'
+import { Route as AuditRouteImport } from './routes/audit'
+import { Route as AlchemyRouteImport } from './routes/alchemy'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TechnologiesRoute = TechnologiesRouteImport.update({
+  id: '/technologies',
+  path: '/technologies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NpcsRoute = NpcsRouteImport.update({
+  id: '/npcs',
+  path: '/npcs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ItemsRoute = ItemsRouteImport.update({
+  id: '/items',
+  path: '/items',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuditRoute = AuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlchemyRoute = AlchemyRouteImport.update({
+  id: '/alchemy',
+  path: '/alchemy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +55,116 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/alchemy': typeof AlchemyRoute
+  '/audit': typeof AuditRoute
+  '/history': typeof HistoryRoute
+  '/items': typeof ItemsRoute
+  '/npcs': typeof NpcsRoute
+  '/technologies': typeof TechnologiesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/alchemy': typeof AlchemyRoute
+  '/audit': typeof AuditRoute
+  '/history': typeof HistoryRoute
+  '/items': typeof ItemsRoute
+  '/npcs': typeof NpcsRoute
+  '/technologies': typeof TechnologiesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/alchemy': typeof AlchemyRoute
+  '/audit': typeof AuditRoute
+  '/history': typeof HistoryRoute
+  '/items': typeof ItemsRoute
+  '/npcs': typeof NpcsRoute
+  '/technologies': typeof TechnologiesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/alchemy'
+    | '/audit'
+    | '/history'
+    | '/items'
+    | '/npcs'
+    | '/technologies'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/alchemy'
+    | '/audit'
+    | '/history'
+    | '/items'
+    | '/npcs'
+    | '/technologies'
+  id:
+    | '__root__'
+    | '/'
+    | '/alchemy'
+    | '/audit'
+    | '/history'
+    | '/items'
+    | '/npcs'
+    | '/technologies'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AlchemyRoute: typeof AlchemyRoute
+  AuditRoute: typeof AuditRoute
+  HistoryRoute: typeof HistoryRoute
+  ItemsRoute: typeof ItemsRoute
+  NpcsRoute: typeof NpcsRoute
+  TechnologiesRoute: typeof TechnologiesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/technologies': {
+      id: '/technologies'
+      path: '/technologies'
+      fullPath: '/technologies'
+      preLoaderRoute: typeof TechnologiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/npcs': {
+      id: '/npcs'
+      path: '/npcs'
+      fullPath: '/npcs'
+      preLoaderRoute: typeof NpcsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/items': {
+      id: '/items'
+      path: '/items'
+      fullPath: '/items'
+      preLoaderRoute: typeof ItemsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/audit': {
+      id: '/audit'
+      path: '/audit'
+      fullPath: '/audit'
+      preLoaderRoute: typeof AuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alchemy': {
+      id: '/alchemy'
+      path: '/alchemy'
+      fullPath: '/alchemy'
+      preLoaderRoute: typeof AlchemyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,17 +177,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AlchemyRoute: AlchemyRoute,
+  AuditRoute: AuditRoute,
+  HistoryRoute: HistoryRoute,
+  ItemsRoute: ItemsRoute,
+  NpcsRoute: NpcsRoute,
+  TechnologiesRoute: TechnologiesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
