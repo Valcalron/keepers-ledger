@@ -207,7 +207,7 @@ function ItemDetail({ slug }: { slug: string }) {
                 <li key={i} className="border-b border-parchment-edge py-1 last:border-0">
                   <span className="font-medium">{u.recipe?.name}</span>{" "}
                   <span className="text-xs text-muted-foreground">
-                    (×{u.amount}, {u.recipe?.station?.name ?? "—"} → {u.recipe?.output_item?.name})
+                    (×{u.amount}, {u.recipe?.station?.name ?? "—"})
                   </span>
                 </li>
               ))}
