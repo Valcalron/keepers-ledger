@@ -766,7 +766,7 @@ export type Database = {
         | "npc_dialogue"
         | "endings_perks"
         | "vendor_tiers"
-      gk_day: "Moon" | "Water" | "Fire" | "Wind" | "Tree" | "Bone"
+      gk_day: "Sloth" | "Gluttony" | "Envy" | "Pride" | "Lust" | "Wrath"
       tech_point_color: "red" | "green" | "blue"
     }
     CompositeTypes: {
@@ -914,7 +914,7 @@ export const Constants = {
         "endings_perks",
         "vendor_tiers",
       ],
-      gk_day: ["Moon", "Water", "Fire", "Wind", "Tree", "Bone"],
+      gk_day: ["Sloth", "Gluttony", "Envy", "Pride", "Lust", "Wrath"],
       tech_point_color: ["red", "green", "blue"],
     },
   },
