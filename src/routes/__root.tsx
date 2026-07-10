@@ -75,12 +75,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Keeper's Ledger — Graveyard Keeper Companion" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { name: "theme-color", content: "#7f2d2a" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "Keeper's Ledger" },
+      { title: "Keeper's Ledger — Unofficial Companion" },
       {
         name: "description",
         content:
-          "Track quests, NPCs, technologies, recipes, alchemy, vendors, and missing unlocks for Graveyard Keeper.",
+          "An unofficial phone-friendly task ledger and checklist companion for Graveyard Keeper players.",
       },
       { property: "og:title", content: "Keeper's Ledger" },
       {
@@ -92,7 +95,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/icon.svg", type: "image/svg+xml" },
+      { rel: "apple-touch-icon", href: "/icon.svg" },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap",
@@ -121,6 +127,12 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
