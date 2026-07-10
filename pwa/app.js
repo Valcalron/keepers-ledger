@@ -1,4 +1,10 @@
 const DAYS = ["Pride", "Gluttony", "Envy", "Wrath", "Sloth", "Lust"];
+const DLC_OPTIONS = [
+  { id: "breakingDead", label: "Breaking Dead", note: "Zombies and Gunter." },
+  { id: "strangerSins", label: "Stranger Sins", note: "Talking Skull tavern story." },
+  { id: "gameOfCrone", label: "Game of Crone", note: "Refugee camp story." },
+  { id: "betterSaveSoul", label: "Better Save Soul", note: "Soul room and sin shards." },
+];
 const DAY_ICONS = {
   Pride: "day-pride.svg",
   Gluttony: "day-gluttony.svg",
@@ -31,13 +37,13 @@ const NPCS = [
   { day: "Any", name: "Beekeeper", location: "Village apiary", note: "Honey, beeswax, and bee supplies." },
   { day: "Any", name: "Vagner", location: "The Dead Horse", note: "Poet, ink/paper needs, and Ms. Charm links." },
   { day: "Any", name: "Koukol", location: "Mountain Fort", note: "Inquisitor assistant and Witch Hill related tasks." },
-  { day: "Any", name: "Gunter", location: "Morgue / resurrection area", note: "Zombie system and Breaking Dead guidance." },
-  { day: "Any", name: "Barman", location: "Talking Skull tavern", note: "Stranger Sins tavern operations." },
-  { day: "Any", name: "Adam", location: "Talking Skull tavern", note: "Stranger Sins story and tavern events." },
-  { day: "Any", name: "Marquis Teodoro Jr.", location: "Refugee camp", note: "Game of Crone refugee camp progression." },
-  { day: "Any", name: "Lady Beatrice", location: "Refugee camp", note: "Game of Crone camp politics and story tasks." },
-  { day: "Any", name: "Euric", location: "Souls room", note: "Better Save Soul tutorial and soul-healing systems." },
-  { day: "Any", name: "Smiler", location: "Souls room", note: "Better Save Soul story and sin shard systems." },
+  { day: "Any", name: "Gunter", location: "Morgue / resurrection area", note: "Zombie system and Breaking Dead guidance.", dlc: "breakingDead" },
+  { day: "Any", name: "Barman", location: "Talking Skull tavern", note: "Stranger Sins tavern operations.", dlc: "strangerSins" },
+  { day: "Any", name: "Adam", location: "Talking Skull tavern", note: "Stranger Sins story and tavern events.", dlc: "strangerSins" },
+  { day: "Any", name: "Marquis Teodoro Jr.", location: "Refugee camp", note: "Game of Crone refugee camp progression.", dlc: "gameOfCrone" },
+  { day: "Any", name: "Lady Beatrice", location: "Refugee camp", note: "Game of Crone camp politics and story tasks.", dlc: "gameOfCrone" },
+  { day: "Any", name: "Euric", location: "Souls room", note: "Better Save Soul tutorial and soul-healing systems.", dlc: "betterSaveSoul" },
+  { day: "Any", name: "Smiler", location: "Souls room", note: "Better Save Soul story and sin shard systems.", dlc: "betterSaveSoul" },
 ];
 const STARTER_CHECKS = [
   "Write down the next NPC request before sleeping",
@@ -60,7 +66,9 @@ function load() {
 
 function seed() {
   return {
+    setupComplete: false,
     day: "Pride",
+    dlcs: {},
     tasks: [],
     checks: STARTER_CHECKS.map((label, index) => ({ id: `check-${index}`, label, done: false })),
     customIcons: {},
@@ -71,6 +79,8 @@ function normalizeState(value) {
   return {
     ...seed(),
     ...value,
+    setupComplete: value.setupComplete === true,
+    dlcs: value.dlcs && typeof value.dlcs === "object" ? value.dlcs : {},
     tasks: Array.isArray(value.tasks) ? value.tasks : [],
     checks: Array.isArray(value.checks) ? value.checks : seed().checks,
     customIcons: value.customIcons && typeof value.customIcons === "object" ? value.customIcons : {},
@@ -83,8 +93,15 @@ function save() {
 
 function $(id) { return document.getElementById(id); }
 function dayIcon(day) { return state.customIcons[day] || DAY_ICONS[day]; }
+function hasDlc(id) { return state.dlcs[id] === true; }
+function npcEnabled(npc) { return !npc.dlc || hasDlc(npc.dlc); }
 
 function render() {
+  renderSetup();
+  if (!state.setupComplete) return;
+  $("setupPanel").classList.add("hidden");
+  $("mainContent").classList.remove("hidden");
+  renderDlcSummary();
   renderDays();
   renderIconInputs();
   renderTaskFormDays();
@@ -92,6 +109,26 @@ function render() {
   renderNpcs();
   renderChecks();
   $("cycleText").textContent = `Cycle order: ${DAYS.join(" -> ")}`;
+}
+
+function renderSetup() {
+  const panel = $("setupPanel");
+  const main = $("mainContent");
+  if (!state.setupComplete) {
+    panel.classList.remove("hidden");
+    main.classList.add("hidden");
+  }
+  $("setupDlcList").innerHTML = DLC_OPTIONS.map(dlc => `
+    <label class="dlc-option">
+      <input type="checkbox" data-dlc="${dlc.id}" ${hasDlc(dlc.id) ? "checked" : ""}>
+      <span><strong>${dlc.label}</strong><small>${dlc.note}</small></span>
+    </label>
+  `).join("");
+}
+
+function renderDlcSummary() {
+  const chosen = DLC_OPTIONS.filter(dlc => hasDlc(dlc.id)).map(dlc => dlc.label);
+  $("dlcSummary").textContent = chosen.length ? `DLC enabled: ${chosen.join(", ")}` : "Base game only";
 }
 
 function renderDays() {
@@ -137,7 +174,7 @@ function renderTasks() {
 }
 
 function renderNpcs() {
-  const npcs = NPCS.filter(npc => npc.day === state.day || npc.day === "Any");
+  const npcs = NPCS.filter(npc => npcEnabled(npc) && (npc.day === state.day || npc.day === "Any"));
   $("npcCount").textContent = npcs.length;
   $("npcList").innerHTML = npcs.map(npc => `
     <article class="mini"><strong>${npc.name}</strong><p>${npc.location}</p><small>${npc.day === "Any" ? "Any day - " : ""}${npc.note}</small></article>
@@ -209,6 +246,12 @@ document.addEventListener("click", event => {
 });
 
 document.addEventListener("change", async event => {
+  const dlcInput = event.target.closest("[data-dlc]");
+  if (dlcInput) {
+    state.dlcs[dlcInput.dataset.dlc] = dlcInput.checked;
+    save();
+    return;
+  }
   const iconInput = event.target.closest("[data-icon-input]");
   if (iconInput && iconInput.files[0]) {
     state.customIcons[iconInput.dataset.iconInput] = await readImage(iconInput.files[0]);
@@ -225,6 +268,15 @@ document.addEventListener("change", async event => {
   }
 });
 
+$("saveSetup").addEventListener("click", () => {
+  state.setupComplete = true;
+  save();
+  render();
+});
+$("editSetup").addEventListener("click", () => {
+  state.setupComplete = false;
+  render();
+});
 $("addTask").addEventListener("click", addTask);
 $("taskTitle").addEventListener("keydown", event => { if (event.key === "Enter") addTask(); });
 $("exportBtn").addEventListener("click", () => {
