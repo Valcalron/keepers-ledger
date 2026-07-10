@@ -21,65 +21,81 @@
       <button id="installBtn" class="ghost hidden">Install</button>
     </header>
 
-    <section class="panel">
-      <p class="eyebrow">In-game day</p>
-      <div id="dayGrid" class="day-grid"></div>
-      <p id="cycleText" class="hint"></p>
-      <details class="icon-editor">
-        <summary>Use my own day icons</summary>
-        <p class="muted">Choose images from your device. They save only here.</p>
-        <div id="iconInputs" class="icon-inputs"></div>
-      </details>
+    <section id="setupPanel" class="panel setup-panel hidden">
+      <p class="eyebrow">First setup</p>
+      <h2>Which DLC do you have?</h2>
+      <p class="muted">This keeps the NPC list and reminders from showing content you do not own.</p>
+      <div id="setupDlcList" class="dlc-grid"></div>
+      <button id="saveSetup" class="primary wide">Start tracking</button>
     </section>
 
-    <section class="panel">
-      <div class="section-head">
-        <div>
-          <h2>Personal task pad</h2>
-          <p class="muted">Write it down before sleeping in-game.</p>
-        </div>
-        <span id="taskCount" class="pill">0</span>
-      </div>
-      <div class="form-grid">
-        <input id="taskTitle" placeholder="Bring silver star wine to Gerry">
-        <select id="taskDay"></select>
-        <select id="taskPriority">
-          <option>High</option>
-          <option selected>Normal</option>
-          <option>Low</option>
-        </select>
-        <button id="addTask" class="primary">Add</button>
-        <textarea id="taskNote" placeholder="Optional note: item count, location, NPC, or blocker."></textarea>
-      </div>
-      <div id="taskList" class="stack"></div>
-    </section>
-
-    <section class="grid-two">
-      <article class="panel">
+    <div id="mainContent" class="hidden">
+      <section class="panel">
         <div class="section-head">
-          <h2>NPCs today</h2>
-          <span id="npcCount" class="pill">0</span>
+          <div>
+            <p class="eyebrow">In-game day</p>
+            <p id="dlcSummary" class="hint"></p>
+          </div>
+          <button id="editSetup" class="ghost">DLCs</button>
         </div>
-        <div id="npcList" class="stack"></div>
-      </article>
+        <div id="dayGrid" class="day-grid"></div>
+        <p id="cycleText" class="hint"></p>
+        <details class="icon-editor">
+          <summary>Use my own day icons</summary>
+          <p class="muted">Choose images from your device. They save only here.</p>
+          <div id="iconInputs" class="icon-inputs"></div>
+        </details>
+      </section>
 
-      <article class="panel">
+      <section class="panel">
         <div class="section-head">
-          <h2>Quick checklist</h2>
-          <span id="checkCount" class="pill">0/0</span>
+          <div>
+            <h2>Personal task pad</h2>
+            <p class="muted">Write it down before sleeping in-game.</p>
+          </div>
+          <span id="taskCount" class="pill">0</span>
         </div>
-        <div id="checkList" class="stack"></div>
-      </article>
-    </section>
+        <div class="form-grid">
+          <input id="taskTitle" placeholder="Bring silver star wine to Gerry">
+          <select id="taskDay"></select>
+          <select id="taskPriority">
+            <option>High</option>
+            <option selected>Normal</option>
+            <option>Low</option>
+          </select>
+          <button id="addTask" class="primary">Add</button>
+          <textarea id="taskNote" placeholder="Optional note: item count, location, NPC, or blocker."></textarea>
+        </div>
+        <div id="taskList" class="stack"></div>
+      </section>
 
-    <section class="panel">
-      <h2>Backup</h2>
-      <p class="muted">Your tasks save on this device. Export a backup before clearing browser data.</p>
-      <div class="actions">
-        <button id="exportBtn" class="ghost">Export save</button>
-        <label class="ghost file-label">Import save<input id="importFile" type="file" accept="application/json"></label>
-      </div>
-    </section>
+      <section class="grid-two">
+        <article class="panel">
+          <div class="section-head">
+            <h2>NPCs today</h2>
+            <span id="npcCount" class="pill">0</span>
+          </div>
+          <div id="npcList" class="stack"></div>
+        </article>
+
+        <article class="panel">
+          <div class="section-head">
+            <h2>Quick checklist</h2>
+            <span id="checkCount" class="pill">0/0</span>
+          </div>
+          <div id="checkList" class="stack"></div>
+        </article>
+      </section>
+
+      <section class="panel">
+        <h2>Backup</h2>
+        <p class="muted">Your tasks save on this device. Export a backup before clearing browser data.</p>
+        <div class="actions">
+          <button id="exportBtn" class="ghost">Export save</button>
+          <label class="ghost file-label">Import save<input id="importFile" type="file" accept="application/json"></label>
+        </div>
+      </section>
+    </div>
   </main>
   <script src="app.js"></script>
 </body>
