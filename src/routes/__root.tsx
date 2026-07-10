@@ -15,6 +15,9 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Toaster } from "@/components/ui/sonner";
 
+const appBase = import.meta.env.BASE_URL;
+const appAsset = (path: string) => `${appBase}${path}`.replace(/\/\/+/g, "/");
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
@@ -60,7 +63,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             Try again
           </button>
           <a
-            href="/"
+            href={appBase}
             className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent"
           >
             Go home
@@ -95,10 +98,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "manifest", href: "/manifest.webmanifest" },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
-      { rel: "icon", href: "/icon.svg", type: "image/svg+xml" },
-      { rel: "apple-touch-icon", href: "/icon.svg" },
+      { rel: "manifest", href: appAsset("manifest.webmanifest") },
+      { rel: "icon", href: appAsset("favicon.ico"), type: "image/x-icon" },
+      { rel: "icon", href: appAsset("icon.svg"), type: "image/svg+xml" },
+      { rel: "apple-touch-icon", href: appAsset("icon.svg") },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap",
@@ -130,7 +133,9 @@ function RootComponent() {
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+      navigator.serviceWorker
+        .register(appAsset("sw.js"), { scope: appBase })
+        .catch(() => undefined);
     }
   }, []);
 
