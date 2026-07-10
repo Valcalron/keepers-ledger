@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { DEFAULT_PROFILE_ID, GK_DAYS, type GkDay } from "@/lib/gk";
 import { DaySelector } from "@/components/DaySelector";
+import { PersonalTaskPad } from "@/components/PersonalTaskPad";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -51,7 +52,7 @@ function Dashboard() {
         .select("questline_id, current_step, completed")
         .eq("profile_id", DEFAULT_PROFILE_ID)
         .eq("completed", false);
-      if (pErr) throw pErr;
+      if (pErr) throw error;
       if (!progress?.length) return [] as Step[];
 
       const pairs = progress.map((p) => ({ q: p.questline_id, s: p.current_step }));
@@ -104,7 +105,7 @@ function Dashboard() {
       <div>
         <h1 className="text-3xl font-serif text-ink">Dashboard</h1>
         <p className="text-sm text-muted-foreground">
-          Set the in-game day to see who's available and what to bring.
+          Set the in-game day, capture your own reminders, and see what the ledger thinks is next.
         </p>
       </div>
 
@@ -117,6 +118,8 @@ function Dashboard() {
           Cycle order: {GK_DAYS.join(" · ")}
         </div>
       </div>
+
+      <PersonalTaskPad day={day} />
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="parchment">
