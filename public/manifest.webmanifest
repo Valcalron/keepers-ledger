@@ -1,0 +1,20 @@
+{
+  "name": "Keeper's Ledger: Unofficial Companion",
+  "short_name": "Keeper's Ledger",
+  "description": "An unofficial phone-friendly task ledger and checklist companion for Graveyard Keeper players.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4ead3",
+  "theme_color": "#7f2d2a",
+  "categories": ["productivity", "games", "utilities"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
