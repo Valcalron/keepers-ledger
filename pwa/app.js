@@ -1,5 +1,12 @@
 const DAYS = ["Pride", "Gluttony", "Envy", "Wrath", "Sloth", "Lust"];
-const GLYPHS = { Pride: "☀", Gluttony: "♃", Envy: "☿", Wrath: "♂", Sloth: "☾", Lust: "♀" };
+const DAY_ICONS = {
+  Pride: "day-pride.svg",
+  Gluttony: "day-gluttony.svg",
+  Envy: "day-envy.svg",
+  Wrath: "day-wrath.svg",
+  Sloth: "day-sloth.svg",
+  Lust: "day-lust.svg",
+};
 const NPCS = [
   { day: "Pride", name: "Bishop", location: "Graveyard / Church", note: "Church, sermons, graveyard quality, early unlocks." },
   { day: "Gluttony", name: "Merchant", location: "Trade office", note: "Garden, trade license, crates, and merchant questline." },
@@ -77,7 +84,7 @@ function render() {
 function renderDays() {
   $("dayGrid").innerHTML = DAYS.map(day => `
     <button class="day ${state.day === day ? "active" : ""}" data-day="${day}">
-      <span>${GLYPHS[day]}</span><strong>${day}</strong><small>${NPCS.find(n => n.day === day).name}</small>
+      <img src="${DAY_ICONS[day]}" alt="${day} day icon"><strong>${day}</strong><small>${NPCS.find(n => n.day === day).name}</small>
     </button>
   `).join("");
 }
