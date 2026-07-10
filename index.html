@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Keeper's Ledger</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">KL</span>
+        <div>
+          <h1>Keeper's Ledger</h1>
+          <p>Graveyard companion</p>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Primary">
+        <button class="nav-item active" data-view="dashboard">Dashboard</button>
+        <button class="nav-item" data-view="tasks">Tasks</button>
+        <button class="nav-item" data-view="collections">Collections</button>
+        <button class="nav-item" data-view="npc">NPC Tracker</button>
+        <button class="nav-item" data-view="unlock">Unlock Audit</button>
+        <button class="nav-item" data-view="data">Save Data</button>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Current plan</p>
+          <h2 id="viewTitle">Dashboard</h2>
+        </div>
+        <div class="day-picker" role="group" aria-label="Current day">
+          <button class="day active" data-day="Moon">Moon</button>
+          <button class="day" data-day="Water">Water</button>
+          <button class="day" data-day="Fire">Fire</button>
+          <button class="day" data-day="Wind">Wind</button>
+          <button class="day" data-day="Tree">Tree</button>
+          <button class="day" data-day="Bone">Bone</button>
+        </div>
+      </header>
+
+      <section id="dashboard" class="view active-view">
+        <div class="panel today-panel">
+          <div>
+            <p class="eyebrow">In-game day</p>
+            <h3 id="todayName">Moon</h3>
+            <p id="todayHint">Set the day to see who is available and what to bring.</p>
+          </div>
+          <button id="nextDayBtn" class="primary-btn">Next day</button>
+        </div>
+        <div class="grid two">
+          <section class="panel">
+            <div class="section-head">
+              <h3>NPCs Today</h3>
+              <span id="npcTodayCount" class="count-pill">0</span>
+            </div>
+            <div id="npcTodayList" class="stack"></div>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <h3>Tasks Today</h3>
+              <span id="taskTodayCount" class="count-pill">0</span>
+            </div>
+            <div id="taskTodayList" class="stack"></div>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <h3>Bring Along</h3>
+              <span id="bringCount" class="count-pill">0</span>
+            </div>
+            <div id="bringList" class="chip-list"></div>
+          </section>
+          <section class="panel">
+            <div class="section-head">
+              <h3>Blocked Tasks</h3>
+              <span id="blockedCount" class="count-pill">0</span>
+            </div>
+            <div id="blockedList" class="stack"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="tasks" class="view">
+        <div class="toolbar">
+          <input id="taskSearch" type="search" placeholder="Search tasks, NPCs, items, locations">
+          <select id="taskFilter">
+            <option value="all">All open tasks</option>
+            <option value="today">Current day only</option>
+            <option value="blocked">Blocked</option>
+            <option value="done">Completed</option>
+          </select>
+          <button id="addTaskBtn" class="primary-btn">Add task</button>
+        </div>
+        <form id="taskForm" class="panel form-panel hidden">
+          <input id="taskTitle" required placeholder="Task title">
+          <input id="taskNpc" placeholder="NPC or source">
+          <input id="taskLocation" placeholder="Location">
+          <select id="taskDay">
+            <option value="Any">Any day</option>
+            <option>Moon</option><option>Water</option><option>Fire</option><option>Wind</option><option>Tree</option><option>Bone</option>
+          </select>
+          <select id="taskPriority">
+            <option>High</option><option selected>Normal</option><option>Low</option>
+          </select>
+          <textarea id="taskNotes" placeholder="What did the game say? What do you need to bring?"></textarea>
+          <button class="primary-btn" type="submit">Save task</button>
+        </form>
+        <div id="taskBoard" class="task-board"></div>
+      </section>
+
+      <section id="collections" class="view">
+        <div class="toolbar">
+          <input id="collectionSearch" type="search" placeholder="Search collection entries">
+          <select id="collectionCategory"></select>
+          <button id="resetSeedBtn" class="ghost-btn">Restore seed lists</button>
+        </div>
+        <div id="collectionStats" class="stats-row"></div>
+        <div id="collectionGrid" class="collection-grid"></div>
+      </section>
+
+      <section id="npc" class="view">
+        <div id="npcGrid" class="collection-grid"></div>
+      </section>
+
+      <section id="unlock" class="view">
+        <div class="panel">
+          <h3>Unlock Audit</h3>
+          <p class="muted">Use this when you remember the goal but forgot the prerequisite chain.</p>
+        </div>
+        <div id="unlockList" class="stack large-stack"></div>
+      </section>
+
+      <section id="data" class="view">
+        <div class="grid two">
+          <section class="panel">
+            <h3>Export</h3>
+            <p class="muted">Copies your progress and custom tasks into a JSON file.</p>
+            <button id="exportBtn" class="primary-btn">Download save</button>
+          </section>
+          <section class="panel">
+            <h3>Import</h3>
+            <p class="muted">Load a previous Keeper's Ledger save file.</p>
+            <input id="importFile" type="file" accept="application/json">
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <template id="emptyTemplate">
+    <p class="empty">Nothing here yet.</p>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
