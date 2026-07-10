@@ -52,7 +52,7 @@ let deferredInstall = null;
 
 function load() {
   try {
-    return JSON.parse(localStorage.getItem(STORE)) || seed();
+    return normalizeState(JSON.parse(localStorage.getItem(STORE)) || seed());
   } catch {
     return seed();
   }
@@ -63,6 +63,17 @@ function seed() {
     day: "Pride",
     tasks: [],
     checks: STARTER_CHECKS.map((label, index) => ({ id: `check-${index}`, label, done: false })),
+    customIcons: {},
+  };
+}
+
+function normalizeState(value) {
+  return {
+    ...seed(),
+    ...value,
+    tasks: Array.isArray(value.tasks) ? value.tasks : [],
+    checks: Array.isArray(value.checks) ? value.checks : seed().checks,
+    customIcons: value.customIcons && typeof value.customIcons === "object" ? value.customIcons : {},
   };
 }
 
@@ -71,21 +82,36 @@ function save() {
 }
 
 function $(id) { return document.getElementById(id); }
+function dayIcon(day) { return state.customIcons[day] || DAY_ICONS[day]; }
 
 function render() {
   renderDays();
+  renderIconInputs();
   renderTaskFormDays();
   renderTasks();
   renderNpcs();
   renderChecks();
-  $("cycleText").textContent = `Cycle order: ${DAYS.join(" → ")}`;
+  $("cycleText").textContent = `Cycle order: ${DAYS.join(" -> ")}`;
 }
 
 function renderDays() {
   $("dayGrid").innerHTML = DAYS.map(day => `
     <button class="day ${state.day === day ? "active" : ""}" data-day="${day}">
-      <img src="${DAY_ICONS[day]}" alt="${day} day icon"><strong>${day}</strong><small>${NPCS.find(n => n.day === day).name}</small>
+      <img src="${dayIcon(day)}" alt="${day} day icon"><strong>${day}</strong><small>${NPCS.find(n => n.day === day).name}</small>
     </button>
+  `).join("");
+}
+
+function renderIconInputs() {
+  const holder = $("iconInputs");
+  if (!holder) return;
+  holder.innerHTML = DAYS.map(day => `
+    <div class="icon-row">
+      <img src="${dayIcon(day)}" alt="${day} preview">
+      <strong>${day}</strong>
+      <label class="ghost file-label">Choose<input type="file" accept="image/*" data-icon-input="${day}"></label>
+      <button class="ghost" data-reset-icon="${day}" ${state.customIcons[day] ? "" : "disabled"}>Reset</button>
+    </div>
   `).join("");
 }
 
@@ -100,7 +126,7 @@ function renderTasks() {
     <article class="task priority-${task.priority.toLowerCase()}">
       <div class="task-top"><strong>${escapeHtml(task.title)}</strong><span class="pill">${task.priority}</span></div>
       ${task.note ? `<p>${escapeHtml(task.note)}</p>` : ""}
-      <small>${task.day}${task.blocked ? " • Blocked" : ""}</small>
+      <small>${task.day}${task.blocked ? " - Blocked" : ""}</small>
       <div class="actions">
         <button data-task="${task.id}" data-action="done">Done</button>
         <button data-task="${task.id}" data-action="block">${task.blocked ? "Unblock" : "Block"}</button>
@@ -114,7 +140,7 @@ function renderNpcs() {
   const npcs = NPCS.filter(npc => npc.day === state.day || npc.day === "Any");
   $("npcCount").textContent = npcs.length;
   $("npcList").innerHTML = npcs.map(npc => `
-    <article class="mini"><strong>${npc.name}</strong><p>${npc.location}</p><small>${npc.day === "Any" ? "Any day • " : ""}${npc.note}</small></article>
+    <article class="mini"><strong>${npc.name}</strong><p>${npc.location}</p><small>${npc.day === "Any" ? "Any day - " : ""}${npc.note}</small></article>
   `).join("");
 }
 
@@ -148,10 +174,25 @@ function escapeHtml(value) {
   return String(value).replace(/[&<>"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[char]));
 }
 
+function readImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 document.addEventListener("click", event => {
   const dayButton = event.target.closest("[data-day]");
   if (dayButton) {
     state.day = dayButton.dataset.day;
+    save();
+    render();
+  }
+  const resetButton = event.target.closest("[data-reset-icon]");
+  if (resetButton) {
+    delete state.customIcons[resetButton.dataset.resetIcon];
     save();
     render();
   }
@@ -167,7 +208,14 @@ document.addEventListener("click", event => {
   }
 });
 
-document.addEventListener("change", event => {
+document.addEventListener("change", async event => {
+  const iconInput = event.target.closest("[data-icon-input]");
+  if (iconInput && iconInput.files[0]) {
+    state.customIcons[iconInput.dataset.iconInput] = await readImage(iconInput.files[0]);
+    save();
+    render();
+    return;
+  }
   const check = event.target.closest("[data-check]");
   if (check) {
     const item = state.checks.find(entry => entry.id === check.dataset.check);
@@ -190,7 +238,7 @@ $("exportBtn").addEventListener("click", () => {
 $("importFile").addEventListener("change", async event => {
   const file = event.target.files[0];
   if (!file) return;
-  state = JSON.parse(await file.text());
+  state = normalizeState(JSON.parse(await file.text()));
   save();
   render();
 });
