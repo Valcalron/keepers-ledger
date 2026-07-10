@@ -29,7 +29,7 @@ type Step = {
 };
 
 function Dashboard() {
-  const [day, setDay] = useState<GkDay>("Sloth");
+  const [day, setDay] = useState<GkDay>(GK_DAYS[0]);
 
   const { data: npcs } = useQuery({
     queryKey: ["npcs-by-day", day],
