@@ -1,4 +1,4 @@
-const CACHE='keepers-companion-static-v3';
+const CACHE='keepers-companion-static-v4';
 const FILES=['./','index.html','styles.css','app.js','manifest.webmanifest','icon.svg','day-pride.svg','day-gluttony.svg','day-envy.svg','day-wrath.svg','day-sloth.svg','day-lust.svg'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()))});
