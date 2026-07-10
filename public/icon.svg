@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Keeper's Ledger icon">
+  <rect width="512" height="512" rx="96" fill="#281812"/>
+  <rect x="86" y="62" width="340" height="388" rx="28" fill="#f5e8c8" stroke="#c78934" stroke-width="18"/>
+  <path d="M142 142h228M142 202h228M142 262h168M142 322h210" stroke="#6f4b2e" stroke-width="22" stroke-linecap="round"/>
+  <path d="M116 84c34 22 67 22 101 0v366c-34-22-67-22-101 0V84Z" fill="#7f2d2a" opacity="0.95"/>
+  <path d="M166 119v271" stroke="#f0c36a" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="355" cy="357" r="48" fill="#7f2d2a"/>
+  <path d="m331 357 17 17 34-40" fill="none" stroke="#f5e8c8" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
