@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#7f2d2a">
+  <meta name="description" content="Unofficial phone-friendly task ledger for Graveyard Keeper players.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <title>Keeper's Ledger</title>
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Unofficial companion</p>
+        <h1>Keeper's Ledger</h1>
+        <p class="muted">A phone checklist for remembering what Graveyard Keeper told you once and then buried.</p>
+      </div>
+      <button id="installBtn" class="ghost hidden">Install</button>
+    </header>
+
+    <section class="panel">
+      <p class="eyebrow">In-game day</p>
+      <div id="dayGrid" class="day-grid"></div>
+      <p id="cycleText" class="hint"></p>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <h2>Personal task pad</h2>
+          <p class="muted">Write it down before sleeping in-game.</p>
+        </div>
+        <span id="taskCount" class="pill">0</span>
+      </div>
+      <div class="form-grid">
+        <input id="taskTitle" placeholder="Bring silver star wine to Gerry">
+        <select id="taskDay"></select>
+        <select id="taskPriority">
+          <option>High</option>
+          <option selected>Normal</option>
+          <option>Low</option>
+        </select>
+        <button id="addTask" class="primary">Add</button>
+        <textarea id="taskNote" placeholder="Optional note: item count, location, NPC, or blocker."></textarea>
+      </div>
+      <div id="taskList" class="stack"></div>
+    </section>
+
+    <section class="grid-two">
+      <article class="panel">
+        <div class="section-head">
+          <h2>NPCs today</h2>
+          <span id="npcCount" class="pill">0</span>
+        </div>
+        <div id="npcList" class="stack"></div>
+      </article>
+
+      <article class="panel">
+        <div class="section-head">
+          <h2>Quick checklist</h2>
+          <span id="checkCount" class="pill">0/0</span>
+        </div>
+        <div id="checkList" class="stack"></div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>Backup</h2>
+      <p class="muted">Your tasks save on this device. Export a backup before clearing browser data.</p>
+      <div class="actions">
+        <button id="exportBtn" class="ghost">Export save</button>
+        <label class="ghost file-label">Import save<input id="importFile" type="file" accept="application/json"></label>
+      </div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
