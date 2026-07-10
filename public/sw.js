@@ -1,5 +1,7 @@
-const CACHE_NAME = "keepers-ledger-v1";
-const APP_SHELL = ["/", "/manifest.webmanifest", "/icon.svg", "/favicon.ico"];
+const CACHE_NAME = "keepers-ledger-v2";
+const BASE_PATH = new URL(self.registration.scope).pathname;
+const appPath = (path) => `${BASE_PATH}${path}`.replace(/\/\/+/g, "/");
+const APP_SHELL = [appPath(""), appPath("manifest.webmanifest"), appPath("icon.svg"), appPath("favicon.ico")];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -19,7 +21,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const requestUrl = new URL(event.request.url);
-  if (requestUrl.origin !== self.location.origin) return;
+  if (requestUrl.origin !== self.location.origin || !requestUrl.pathname.startsWith(BASE_PATH)) return;
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
@@ -31,7 +33,7 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         })
-        .catch(() => cached || caches.match("/"));
+        .catch(() => cached || caches.match(appPath("")));
 
       return cached || network;
     }),
