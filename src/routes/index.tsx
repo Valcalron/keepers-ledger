@@ -52,7 +52,7 @@ function Dashboard() {
         .select("questline_id, current_step, completed")
         .eq("profile_id", DEFAULT_PROFILE_ID)
         .eq("completed", false);
-      if (pErr) throw error;
+      if (pErr) throw pErr;
       if (!progress?.length) return [] as Step[];
 
       const pairs = progress.map((p) => ({ q: p.questline_id, s: p.current_step }));
