@@ -50,9 +50,16 @@ jobs:
             exit 1
           fi
 
-      - name: Add SPA fallback
+      - name: Add SPA fallback when available
         shell: bash
-        run: cp "${{ steps.output.outputs.path }}/index.html" "${{ steps.output.outputs.path }}/404.html"
+        run: |
+          output="${{ steps.output.outputs.path }}"
+          if [ -f "$output/index.html" ]; then
+            cp "$output/index.html" "$output/404.html"
+          else
+            echo "No index.html found in $output; skipping SPA fallback."
+            find "$output" -maxdepth 2 -type f | sort
+          fi
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
