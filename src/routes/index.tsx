@@ -12,6 +12,15 @@ export const Route = createFileRoute("/")({
   component: Dashboard,
 });
 
+type NpcSummary = {
+  id: string;
+  name: string;
+  location: string | null;
+  short_description: string | null;
+  day_available: GkDay | null;
+  dlc: boolean;
+};
+
 type Step = {
   id: string;
   step_number: number;
@@ -28,48 +37,107 @@ type Step = {
   };
 };
 
+const LOCAL_NPCS: NpcSummary[] = [
+  {
+    id: "local-bishop",
+    name: "Bishop",
+    location: "Graveyard / Church",
+    short_description: "Church, sermons, graveyard quality, and early unlocks.",
+    day_available: "Pride",
+    dlc: false,
+  },
+  {
+    id: "local-merchant",
+    name: "Merchant",
+    location: "Trade office south of the tavern",
+    short_description: "Garden, trade license, crates, and merchant questline.",
+    day_available: "Gluttony",
+    dlc: false,
+  },
+  {
+    id: "local-snake",
+    name: "Snake",
+    location: "Cellar / Alchemy Lab / Dungeon",
+    short_description: "Early nights at first, then Envy after the gate is opened.",
+    day_available: "Envy",
+    dlc: false,
+  },
+  {
+    id: "local-inquisitor",
+    name: "Inquisitor",
+    location: "Witch Hill",
+    short_description: "Witch Hill, vineyard access, dark organs, and main quest progress.",
+    day_available: "Wrath",
+    dlc: false,
+  },
+  {
+    id: "local-astrologer",
+    name: "Astrologer",
+    location: "Sealight Lighthouse",
+    short_description: "Writing supplies, science, Snake links, and main quest pieces.",
+    day_available: "Sloth",
+    dlc: false,
+  },
+  {
+    id: "local-ms-charm",
+    name: "Ms. Charm",
+    location: "The Dead Horse",
+    short_description: "Songs, social quests, Snake links, and late main quest pieces.",
+    day_available: "Lust",
+    dlc: false,
+  },
+];
+
 function Dashboard() {
   const [day, setDay] = useState<GkDay>(GK_DAYS[0]);
 
   const { data: npcs } = useQuery({
     queryKey: ["npcs-by-day", day],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("npc")
-        .select("*")
-        .eq("day_available", day)
-        .order("name");
-      if (error) throw error;
-      return data ?? [];
+      try {
+        const { data, error } = await supabase
+          .from("npc")
+          .select("*")
+          .eq("day_available", day)
+          .order("name");
+        if (error) throw error;
+        return (data?.length ? data : LOCAL_NPCS.filter((npc) => npc.day_available === day)) as NpcSummary[];
+      } catch {
+        return LOCAL_NPCS.filter((npc) => npc.day_available === day);
+      }
     },
   });
 
   const { data: activeSteps } = useQuery({
     queryKey: ["active-steps"],
     queryFn: async () => {
-      const { data: progress, error: pErr } = await supabase
-        .from("user_quest_progress")
-        .select("questline_id, current_step, completed")
-        .eq("profile_id", DEFAULT_PROFILE_ID)
-        .eq("completed", false);
-      if (pErr) throw pErr;
-      if (!progress?.length) return [] as Step[];
+      try {
+        const { data: progress, error: pErr } = await supabase
+          .from("user_quest_progress")
+          .select("questline_id, current_step, completed")
+          .eq("profile_id", DEFAULT_PROFILE_ID)
+          .eq("completed", false);
+        if (pErr) throw pErr;
+        if (!progress?.length) return [] as Step[];
 
-      const pairs = progress.map((p) => ({ q: p.questline_id, s: p.current_step }));
-      const { data: steps, error: sErr } = await supabase
-        .from("quest_steps")
-        .select(
-          "id, step_number, title, description, required_items, dependencies, questline:questlines(id, slug, name, dlc, npc:npc(name, day_available))",
-        )
-        .in(
-          "questline_id",
-          pairs.map((p) => p.q),
-        );
-      if (sErr) throw sErr;
+        const pairs = progress.map((p) => ({ q: p.questline_id, s: p.current_step }));
+        const { data: steps, error: sErr } = await supabase
+          .from("quest_steps")
+          .select(
+            "id, step_number, title, description, required_items, dependencies, questline:questlines(id, slug, name, dlc, npc:npc(name, day_available))",
+          )
+          .in(
+            "questline_id",
+            pairs.map((p) => p.q),
+          );
+        if (sErr) throw sErr;
 
-      return (steps ?? []).filter((s: any) =>
-        pairs.some((p) => p.q === s.questline.id && p.s === s.step_number),
-      ) as unknown as Step[];
+        return (steps ?? []).filter((s: any) =>
+          pairs.some((p) => p.q === s.questline.id && p.s === s.step_number),
+        ) as unknown as Step[];
+      } catch {
+        return [] as Step[];
+      }
     },
   });
 
@@ -163,7 +231,7 @@ function Dashboard() {
           <CardContent>
             {!todaySteps.length ? (
               <p className="text-sm text-muted-foreground">
-                Nothing pressing today. Peaceful.
+                No database quest steps loaded. Use the personal task pad above while we build the checklist out.
               </p>
             ) : (
               <ul className="space-y-2">
@@ -188,7 +256,7 @@ function Dashboard() {
           </CardHeader>
           <CardContent>
             {Object.keys(itemsToBring).length === 0 ? (
-              <p className="text-sm text-muted-foreground">Empty satchel.</p>
+              <p className="text-sm text-muted-foreground">Add item reminders in the personal task pad notes.</p>
             ) : (
               <ul className="space-y-1 text-sm">
                 {Object.entries(itemsToBring).map(([slug, amt]) => (
@@ -208,7 +276,7 @@ function Dashboard() {
           </CardHeader>
           <CardContent>
             {blocked.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nothing blocked.</p>
+              <p className="text-sm text-muted-foreground">Nothing blocked in the database tracker.</p>
             ) : (
               <ul className="space-y-2">
                 {blocked.map((b, i) => (
