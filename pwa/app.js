@@ -7,6 +7,30 @@ const NPCS = [
   { day: "Wrath", name: "Inquisitor", location: "Witch Hill", note: "Witch Hill, vineyard, dark organs, main quest progress." },
   { day: "Sloth", name: "Astrologer", location: "Sealight Lighthouse", note: "Writing supplies, science, Snake links, main quest pieces." },
   { day: "Lust", name: "Ms. Charm", location: "The Dead Horse", note: "Songs, social quests, Snake links, late main quest pieces." },
+  { day: "Any", name: "Gerry", location: "Morgue / cellar", note: "Talking skull. Early tutorial and recurring story reminders." },
+  { day: "Any", name: "Donkey", location: "Road by the morgue", note: "Corpse deliveries, carrots, oil, and revolution tasks." },
+  { day: "Any", name: "Horadric", location: "The Dead Horse", note: "Tavern keeper, early errands, beer, and town connections." },
+  { day: "Any", name: "Miss Chain", location: "The Dead Horse", note: "Tavern kitchen, Horadric link, and food-related needs." },
+  { day: "Any", name: "Krezvold", location: "Blacksmith", note: "Metal work, early sword, slimes, and smithing access." },
+  { day: "Any", name: "Cory", location: "Stone cutter", note: "Stone, marble, and quarry-related purchases." },
+  { day: "Any", name: "Tress", location: "Woodcutter", note: "Wood, planks, timber, and early resource purchases." },
+  { day: "Any", name: "Dig", location: "Village outskirts", note: "Hemp, oil, and odd early-game errands." },
+  { day: "Any", name: "Clotho", location: "Swamp", note: "Witch, alchemy access, memory quest, and swamp shortcuts." },
+  { day: "Any", name: "Lighthouse Keeper", location: "Lighthouse", note: "Fishing rod, bait, and fish trade." },
+  { day: "Any", name: "Farmer", location: "Wheat farm", note: "Seeds, farming access, and crop supplies." },
+  { day: "Any", name: "Miller", location: "Mill", note: "Flour, milling, and farm-side errands." },
+  { day: "Any", name: "Rosa", location: "Dairy farm", note: "Milk, butter, and food ingredients." },
+  { day: "Any", name: "Shepherd", location: "Village", note: "Burial certificate economy and village trading." },
+  { day: "Any", name: "Beekeeper", location: "Village apiary", note: "Honey, beeswax, and bee supplies." },
+  { day: "Any", name: "Vagner", location: "The Dead Horse", note: "Poet, ink/paper needs, and Ms. Charm links." },
+  { day: "Any", name: "Koukol", location: "Mountain Fort", note: "Inquisitor assistant and Witch Hill related tasks." },
+  { day: "Any", name: "Gunter", location: "Morgue / resurrection area", note: "Zombie system and Breaking Dead guidance." },
+  { day: "Any", name: "Barman", location: "Talking Skull tavern", note: "Stranger Sins tavern operations." },
+  { day: "Any", name: "Adam", location: "Talking Skull tavern", note: "Stranger Sins story and tavern events." },
+  { day: "Any", name: "Marquis Teodoro Jr.", location: "Refugee camp", note: "Game of Crone refugee camp progression." },
+  { day: "Any", name: "Lady Beatrice", location: "Refugee camp", note: "Game of Crone camp politics and story tasks." },
+  { day: "Any", name: "Euric", location: "Souls room", note: "Better Save Soul tutorial and soul-healing systems." },
+  { day: "Any", name: "Smiler", location: "Souls room", note: "Better Save Soul story and sin shard systems." },
 ];
 const STARTER_CHECKS = [
   "Write down the next NPC request before sleeping",
@@ -15,7 +39,7 @@ const STARTER_CHECKS = [
   "Mark blocked tasks with the missing requirement",
   "Export a save backup after a long session",
 ];
-const STORE = "keepers-ledger-pwa-v1";
+const STORE = "keepers-companion-pwa-v1";
 let state = load();
 let deferredInstall = null;
 
@@ -80,10 +104,10 @@ function renderTasks() {
 }
 
 function renderNpcs() {
-  const npcs = NPCS.filter(npc => npc.day === state.day);
+  const npcs = NPCS.filter(npc => npc.day === state.day || npc.day === "Any");
   $("npcCount").textContent = npcs.length;
   $("npcList").innerHTML = npcs.map(npc => `
-    <article class="mini"><strong>${npc.name}</strong><p>${npc.location}</p><small>${npc.note}</small></article>
+    <article class="mini"><strong>${npc.name}</strong><p>${npc.location}</p><small>${npc.day === "Any" ? "Any day • " : ""}${npc.note}</small></article>
   `).join("");
 }
 
@@ -152,7 +176,7 @@ $("exportBtn").addEventListener("click", () => {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "keepers-ledger-save.json";
+  link.download = "keepers-companion-save.json";
   link.click();
   URL.revokeObjectURL(link.href);
 });
